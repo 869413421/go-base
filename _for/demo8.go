@@ -15,3 +15,7 @@ func main() {
 EXIT1:
 	fmt.Println("goto exit")
 }
+
+func a(a interface{}) {
+
+}
