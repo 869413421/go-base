@@ -31,7 +31,7 @@ func main() {
 	var num Number = 1
 	var num2 Number1
 	num2 = num
-	var num3 Number2 = num2
-	num2 = num3
-	fmt.Println(num3)
+	//var num3 Number2 = num2
+	//num2 = num3
+	fmt.Println(num2)
 }
