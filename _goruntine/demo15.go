@@ -3,28 +3,35 @@ package main
 import (
 	"context"
 	"fmt"
-	"sync/atomic"
+	"time"
 )
 
-var num1 int32 = 0
+func go2(ctx context.Context) {
+	select {
+	case <-ctx.Done():
+		println("携程2已结束")
+		return
+	}
+}
 
-func testAdd(deferFunc func()) {
-	defer deferFunc()
-	atomic.AddInt32(&num1, 1)
-	fmt.Println(num1)
+func go1(ctx context.Context) {
+	go go2(ctx)
+	select {
+	case <-ctx.Done():
+		println("携程1已结束")
+		return
+	}
 }
 
 func main() {
 	ctx, cancelFunc := context.WithCancel(context.Background())
-	for i := 10; i < 100; i++ {
-		go testAdd(func() {
-			fmt.Println("defer")
-			fmt.Println(atomic.LoadInt32(&num1))
-			if atomic.LoadInt32(&num1) >= 10 {
-				cancelFunc()
-			}
-		})
+	go go1(ctx)
+	for i := 1; i < 100; i++ {
+		if i > 10 {
+			cancelFunc()
+		}
 	}
-	<-ctx.Done()
-	fmt.Println("完成")
+
+	time.Sleep(1 * time.Second)
+	fmt.Println("主携程结束")
 }
